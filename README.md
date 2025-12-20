@@ -46,7 +46,7 @@
 
 >>> This API is secured using JWT authentication.
 Most endpoints require a valid token, which prevents unauthorized access.
->>> I will first show what happens when authentication is missing, then show the correct way.
+>>> I will first show what happens when authentication is missing, and then show the correct way.
 
 ## brief mainly important of this TASK MANAGEMENT API
 
