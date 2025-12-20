@@ -3,10 +3,12 @@ from datetime import timedelta
 from django.utils import timezone
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import validate_password
 from .models import Profile, PasswordResetToken
 from roles.models import Role
 
 User = get_user_model()
+
 
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -23,8 +25,8 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "is_active"]
 
 class UserCreateSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, min_length=8)
-    password2 = serializers.CharField(write_only=True, min_length=8)
+    password = serializers.CharField(write_only=True, min_length=8, validators=[validate_password])
+    password2 = serializers.CharField(write_only=True, min_length=8, validators=[validate_password])
 
     class Meta:
         model = User
@@ -65,3 +67,34 @@ class PasswordResetTokenSerializer(serializers.ModelSerializer):
         model = PasswordResetToken
         fields = ["id", "user", "token", "expires_at", "is_used"]
         read_only_fields = ["id", "user", "expires_at", "is_used"]
+
+
+
+
+
+
+class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, min_length=8)
+
+    class Meta:
+        model = User
+        fields = ("id", "username", "email", "password")
+
+    def create(self, validated_data):
+        user = User.objects.create_user(
+            username=validated_data["username"],
+            email=validated_data.get("email"),
+            password=validated_data["password"],
+        )
+
+        # # Assign default role
+        # try:
+        #     role, _ = Role.objects.get_or_create(name="USER")
+        #     user.role = role
+        #     user.save()
+        
+        # except Role.DoesNotExist:
+        #     pass # project still works without roles seeded
+
+
+        return user

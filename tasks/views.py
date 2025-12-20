@@ -2,6 +2,11 @@
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 from django.db import models
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter, OrderingFilter
+from .models import Task
+from .filters import TaskFilter
+from .permissions import IsTaskOwnerOrAssigneeOrAdmin,IsEditableIfNotCompleted
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -14,10 +19,14 @@ from activity.utils import log_activity
 User = get_user_model()
 
 class TaskViewSet(viewsets.ModelViewSet):
+    serializer_class = TaskDetailSerializer
     queryset = Task.objects.all().select_related("creator", "project")
     permission_classes = [IsAuthenticated, IsTaskOwnerOrAssigneeOrAdmin, IsEditableIfNotCompleted]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_fields = ["status", "priority", "project", "creator"]
     ordering_fields = ["due_date", "priority", "created_at"]
+    ordering = ["-created_at"]
+    search_fields = ["title", "description", "creator__username", "assignees__username"]
 
     def get_serializer_class(self):
         if self.action == "list":

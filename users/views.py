@@ -7,10 +7,14 @@ from rest_framework.response import Response
 from .serializers import UserSerializer, UserCreateSerializer, ProfileSerializer
 from core.permissions import IsAdmin
 
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
+from .serializers import RegisterSerializer
+
 User = get_user_model()
 
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all().select_related("profile", "role")
+    queryset = User.objects.all().select_related("profile", "role").order_by("date_joined")
     serializer_class = UserSerializer
 
     def get_permissions(self):
@@ -30,3 +34,16 @@ class UserViewSet(viewsets.ModelViewSet):
     def me(self, request):
         serializer = UserSerializer(request.user, context={"request": request})
         return Response(serializer.data)
+
+
+
+
+
+
+
+
+class RegisterView(APIView):
+    queryset = User.objects.all()
+    serializer_class = RegisterSerializer
+    permission_classes = [AllowAny]
+    

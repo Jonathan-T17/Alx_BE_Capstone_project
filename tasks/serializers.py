@@ -9,12 +9,13 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 class TaskListSerializer(serializers.ModelSerializer):
-    creator = serializers.SlugRelatedField(slug_field="username", read_only=True)
+    creator = serializers.UUIDField(source="creator.id", read_only=True)
     project = serializers.SlugRelatedField(slug_field="name", read_only=True)
     assignees = serializers.SerializerMethodField()
     class Meta:
         model = Task
         fields = ["id", "title", "description", "priority", "status", "due_date", "project", "creator", "assignees", "completed_at"]
+        read_only_fields = ["id", "creator", "completed_at"]
 
     def get_assignees(self, obj):
         users = User.objects.filter(task_assignments__task=obj)
@@ -37,6 +38,7 @@ class TaskDetailSerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, attrs):
+
         # if status is completed then due_date check already done; but check business rule: completed tasks cannot be edited (enforced in update)
         return attrs
 
@@ -95,6 +97,17 @@ class TaskAssignmentSerializer(serializers.ModelSerializer):
         model = TaskAssignment
         fields = ["id", "task", "user", "assigned_by", "assigned_at"]
         read_only_fields = ["id", "assigned_by", "assigned_at"]
+
+
+    def validate(self, attrs):
+        task = attrs["task"]
+        user = attrs["user"]
+
+        if task.creator != self.context["request"].user:
+            raise serializers.ValidationError("Only task owner can assign users.")
+
+        return attrs
+        
 
 class CommentSerializer(serializers.ModelSerializer):
     user = serializers.SlugRelatedField(slug_field="username", read_only=True)
