@@ -43,7 +43,13 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class RegisterView(APIView):
-    queryset = User.objects.all()
-    serializer_class = RegisterSerializer
     permission_classes = [AllowAny]
-    
+
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        return Response(
+            UserSerializer(user, context={"request": request}).data,
+            status=status.HTTP_201_CREATED
+        )
