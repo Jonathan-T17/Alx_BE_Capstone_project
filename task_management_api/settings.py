@@ -208,7 +208,6 @@ CORS_ALLOWED_ORIGINS = [
     "jonathan.pythonanywhere.com",
 
     # put your frontend origins when ready
-    "http://localhost:3000",
 ]
 
 

@@ -95,10 +95,9 @@ Most endpoints require a valid token, which prevents unauthorized access.
 
 ## 3️⃣ Authorization Header
 
-## All protected requests must include:
+## All protected requests must include
 
 >>>> Authorization: Bearer <access_token>
-
 
 ## Without this → 401 Unauthorized
 
@@ -180,3 +179,115 @@ Run all tests:  python manage.py test
 ## ✔ Status logic
 
 ## All tests pass successfully
+>>
+>>
+>>
+>>>
+>>>
+>>
+### 🔗 Live API Deployment
+
+The Task Management API has been successfully deployed and is publicly accessible.
+
+## Base URL: https://jonathant.pythonanywhere.com/api/
+
+
+When the base API URL is accessed, it returns a friendly JSON response confirming that the API is live and showing the available authentication and resource endpoints.
+
+🚀 Getting Started (How to Use the API)
+
+This backend follows a token-based authentication workflow using JWT (JSON Web Tokens).
+
+## 1️⃣ Register a New User
+
+>>>Endpoint: POST /api/auth/register/
+
+Example request body:
+
+{
+  "email": "user@example.com",
+  "password": "StrongPassword123!",
+  "password_confirm": "StrongPassword123!"
+}
+
+This creates a new user account.
+
+## 2️⃣ Login and Get Access Token
+
+>>> Endpoint: POST /api/auth/token/
+
+## Example request body:
+
+{
+  "email": "user@example.com",
+  "password": "StrongPassword123!"
+}
+
+## Response:
+
+{
+  "access": "<JWT_ACCESS_TOKEN>",
+  "refresh": "<JWT_REFRESH_TOKEN>"
+}
+
+The access token is required to access protected endpoints.
+
+## 3️⃣ Access Protected Endpoints
+
+Include the access token in the request headers:
+
+Authorization: Bearer <JWT_ACCESS_TOKEN>
+
+## Example: GET /api/users/
+
+Some endpoints (such as listing all users) are restricted to admin users only.
+Non-admin users will correctly receive a 403 Permission Denied response.
+
+## Available API Endpoints
+
+Resource            Endpoint
+Authentication      /api/auth/
+Users               /api/users/
+Projects            /api/projects/
+Tasks               /api/tasks/
+Teams               /api/teams/
+Roles               /api/roles/
+Activity Logs       /api/activity/
+
+All resource endpoints are secured and require authentication unless explicitly stated.
+
+## 🔐 Permissions & Security
+
+JWT authentication is enforced across the API
+
+Role-based access control is implemented
+
+Sensitive endpoints (e.g., user listing and deletion) are restricted to admin users
+
+Unauthorized requests return appropriate HTTP error responses
+
+## 🧪 Testing the API
+
+All endpoints were tested using Postman in an incognito session to ensure public accessibility and correct authentication behavior.
+
+## ✅ Notes
+
+This project is backend-only; no frontend is included
+
+JSON responses are designed for frontend integration
+
+The API follows RESTful principles
+>>
+>>
+>>
+
+### Deployed and verified on PythonAnywhere
+
+>>
+>>
+>>
+
+## 🎯 Conclusion
+
+The Task Management API is live, secure, and fully functional.
+It demonstrates real-world backend concepts including authentication, permissions, and modular API design.
